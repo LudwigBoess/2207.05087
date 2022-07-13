@@ -267,11 +267,11 @@ function plot_synch_spectrum(filenames, names, colors, plot_name)
         for i = 1:Nfiles 
             ν_arr, P_sim, P_10sim, P_100sim, P_1muG = read_spectrum(filenames[i] * "/synchrotron/NR_spectrum.dat" )
 
-            P_in_W_Hz = P_10sim ./ mJy_to_W(c, 1.0, z)
-            P_norm = 1.e3 / P_in_W_Hz[1]
+            P_in_mJy = P_10sim ./ mJy_to_W(c, 1.0, z)
+            P_norm = 1.e3 / P_in_mJy[1]
             
-            plot(ν_arr, P_in_W_Hz, color=colors[i], label=names[i])
-            plot(ν_arr, P_norm .* P_in_W_Hz, color=colors[i], linestyle="--")
+            plot(ν_arr, P_in_mJy, color=colors[i], label=names[i])
+            plot(ν_arr, P_norm .* P_in_mJy, color=colors[i], linestyle="--")
         end
 
         # observations
