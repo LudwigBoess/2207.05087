@@ -1,6 +1,8 @@
 # CRESCENDO
 
-In this repository you will find all scripts and dependencies to reproduce the figures presented in [Böss et al (submitted)](https://arxiv.org/abs/2207.05087).
+In this repository you will find all scripts and dependencies to reproduce the figures presented in [Böss et. al. (submitted)](https://arxiv.org/abs/2207.05087).
+
+These scripts require Julia >= 1.7 to be installed.
 
 To initialize the dependencies run `julia build.jl`.
 
