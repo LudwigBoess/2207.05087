@@ -1,6 +1,6 @@
 # CRESCENDO
 
-In this repository you will find all scripts and dependencies to reproduce the figures presented in Böss et al (2022).
+In this repository you will find all scripts and dependencies to reproduce the figures presented in [Böss et al (submitted)](https://arxiv.org/abs/2207.05087).
 
 To initialize the dependencies run `julia build.jl`.
 
