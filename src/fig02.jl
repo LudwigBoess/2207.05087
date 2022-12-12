@@ -84,7 +84,7 @@ function plot_mean_errors(path_in, colors, Nbins, snap_range, plot_name)
         plot(0.0, 0.0, color = colors[3], lw=lw, label = "Number  " * L"N")
 
         girichidis_solution = readdlm(path_in * "Girichidis2019_bounce.csv", ',')
-        plot(girichidis_solution[:, 1], girichidis_solution[:, 2], color = "k", linestyle = ":", label = "Girichidis+19", lw = lw)
+        plot(girichidis_solution[:, 1], girichidis_solution[:, 2], color = "k", linestyle = ":", label = "Girichidis+20", lw = lw)
 
         legend(frameon = false, loc = "lower right")
 
