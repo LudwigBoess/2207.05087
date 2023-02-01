@@ -147,7 +147,7 @@ function multiplot_spectra(path_in, snap_range, id, q_0, plot_name)
         axis_ticks_styling!(ax)
 
         xlabel("Dimensionless Momentum  " * L" \hat{p}" * " [ " * L" (m_e c)^{-1}" * "]")
-        ylabel("Distribution Function  " * L"f(p)")
+        ylabel("Distribution Function  " * L"f(\hat{p})")
 
         title("Initial Slope  " * L"q_0 \: = \: " * "- $(q_0[plot_num])")
 

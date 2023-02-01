@@ -64,7 +64,7 @@ function get_histograms(folder)
 
     # read Mach data
 
-    mach_bins = LinRange(1.0, 7.0, 26)
+    mach_bins = LinRange(1.0, 7.0, 51)
 
     # mach histograms
     h = fit(Histogram, NR["M"], mach_bins)
@@ -211,3 +211,158 @@ labels = [ "KR13" * L"d \theta_B",
 plot_name = "Plots/Fig10.png"
 
 plot_histograms(folders, colors, labels, plot_name)
+
+
+"""
+    Referee Report
+"""
+
+function plasma_beta_in_shock(folder::String, relic::String)
+
+    sim_path = "$simulation_path/$folder/"
+
+    if relic == "NR"
+        fi = sim_path * "snap_023"
+        h = read_header(fi)
+        center_pos = h.boxsize .* [0.3, 0.475, 0.5]
+        xyz_size = 0.3h.boxsize
+    else
+        fi = sim_path * "snap_020"
+        h = read_header(fi)
+        center_pos = h.boxsize .* [0.5, 0.475, 0.5]
+        xyz_size = 0.2h.boxsize
+    end
+
+    shock =  GadgetCube(center_pos - [0.5xyz_size, 0.5xyz_size, 0.5xyz_size], 
+                        center_pos + [0.5xyz_size, 0.5xyz_size, 0.5xyz_size])
+
+
+    GU = GadgetPhysical(h)
+
+    println("\tpos")
+    pos = read_block(fi, "POS", parttype = 0)
+
+    sel = GadgetIO.get_geometry_mask(shock, pos)
+
+    println("\tmach")
+    mach = read_block(fi, "MACH", parttype = 0)[sel]
+
+    sel_mach = findall(mach .> 1.0)
+    mach = mach[sel_mach]
+
+    println("\tB")
+    Bfld = read_block(fi, "BFLD", parttype = 0)[:, sel[sel_mach] ]
+    B = @. Bfld[1, :]^2 + Bfld[2, :]^2 + Bfld[3, :]^2
+    println("\tU")
+    U = read_block(fi, "U", parttype = 0)[ sel[sel_mach] ]
+    println("\trho")
+    ρ = read_block(fi, "RHO", parttype = 0)[ sel[sel_mach] ]
+    Pth = @. 2/3 * ρ * U * GU.P_th_cgs
+
+    Beta = @. 8π * Pth / B
+
+    println("maximum(beta) = $(maximum(Beta))")
+
+    return Dict("M" => mach, "Beta" => Beta)
+end
+
+function get_scatter_data(folder)
+
+    # store relevant particles
+    println("reading NR")
+    NR = plasma_beta_in_shock(folder, "NR")
+    println("reading SR")
+    SR = plasma_beta_in_shock(folder, "SR")
+
+    Nbins = 51
+
+    mach_bins = LinRange(1.0, 7.0, Nbins)
+
+    # beta histograms
+    mean_beta_NR = bin_1D(NR["M"], [1.0, 7.0], log10.(NR["Beta"]), calc_sigma=false; Nbins)
+    mean_beta_SR = bin_1D(SR["M"], [1.0, 7.0], log10.(SR["Beta"]), calc_sigma=false; Nbins)
+
+
+    return Dict("Ms"   => mach_bins,
+                "Beta" => Dict(
+                    "NR" => mean_beta_NR,
+                    "SR" => mean_beta_SR)
+                )
+end
+
+"""
+    plot_histograms(folders, colors, labels, plot_name)
+
+Main plot routine.
+"""
+function plot_plasma_beta(folders, colors, labels, plot_name)
+
+    Nfiles = length(folders)
+
+    fig = get_figure(0.8)
+    plot_styling!()
+
+    ax = Vector{Any}(undef, 4)
+    subplot(2, 1, 1)
+    ax[1] = gca()
+    axis_ticks_styling!(ax[1])
+
+    #ax[1].set_yscale("log")
+    ax[1].set_xlim([1.0, 7.0])
+    ax[1].set_ylim([-1, 4.5])
+    ax[1].set_ylabel("Plasma Beta " * L"\log_{10} \beta")
+    ax[1].set_xticklabels([])
+
+    subplot(2, 1, 2)
+    ax[2] = gca()
+    axis_ticks_styling!(ax[2])
+
+    #ax[2].set_yscale("log")
+    ax[2].set_xlim([1.0, 7.0])
+    ax[2].set_ylim([-1, 4.5])
+    ax[2].set_ylabel("Plasma Beta " * L"\log_{10} \beta")
+    ax[2].set_xlabel("Sonic Mach Number " * L"\mathcal{M}_s")
+
+    for i = 1:Nfiles
+        println("file $i")
+        
+        data = get_scatter_data(folders[i])
+
+        # Mach PDF left
+        ax[1].step(data["Ms"], data["Beta"]["NR"], where="post", color = colors[i], label = labels[i])
+
+        # Mach PDF right 
+        ax[2].step(data["Ms"], data["Beta"]["SR"], where="post", color = colors[i], label = labels[i])
+
+    end
+    ax[2].legend(frameon = false, fontsize=11, loc="lower right")
+    ax[1].text(6.0, 7.e4, "NR", fontsize = 20)
+    ax[2].text(6.0, 7.e4, "SR", fontsize = 20)
+    subplots_adjust( hspace = 0 )
+
+    savefig(plot_name)#, bbox_inches = "tight")
+    close(fig)
+end
+
+folders = [ "KR13d_thetaB", 
+            "KR13t", 
+            "KR13t_thetaB",
+            "Ryu19t",
+            "Ryu19t_thetaB",
+            "Ryu19t_thetaB_pinj", 
+            "Ryu19t_thetaB_pinj_q"
+            ]
+
+colors = ["#fc17f1", "purple", "darkblue", "dodgerblue", "teal", "#82f70c", "#dbc202"]
+
+labels = [ "KR13" * L"d \theta_B",
+           "KR13" * L"t", 
+           "KR13"  * L"t \theta_B",
+           "Ryu19" * L"t",
+           "Ryu19" * L"t \theta_B",
+           "Ryu19" * L"t \theta_B p_\mathrm{inj}",
+           "Ryu19" * L"t \theta_B p_\mathrm{inj} q_\alpha"]
+
+plot_name = "Plots/plasma_beta.png"
+
+plot_plasma_beta(folders, colors, labels, plot_name)

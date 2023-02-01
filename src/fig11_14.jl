@@ -14,7 +14,7 @@ CRep + CRpP + Xcr + Synch
 function plot_cr_total_compare(map_paths, relic)
 
     if relic == "NR"
-        vmin_arr = [1.e-18, 1.e-18, 1.e-5, 1.e15, 1.e15, -2.0]
+        vmin_arr = [1.e-17, 1.e-18, 1.e-5, 1.e15, 1.e15, -2.0]
         vmax_arr = [1.e-12, 1.e-13, 1.e0, 1.e20, 1.e20, -0.5]
         contour_levels = [4.6]
         time = 2.25 # this is hardcoded so you can plot the maps without the snapshots
@@ -138,6 +138,5 @@ folders = [ "KR13d_thetaB",
 
 map_paths = ["data/cluster_mergers/$folder/maps/" for folder ∈ folders ]
 
-
-plot_cr_total_compare(map_paths, "SR")
+plot_cr_total_compare(map_paths, "NR")
 

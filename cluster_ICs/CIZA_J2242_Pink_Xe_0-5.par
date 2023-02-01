@@ -1,0 +1,72 @@
+% % Toycluster Parameter File %%
+
+Output_file ./CIZA_J2242_2e7_Pink   % Base name
+
+Ntotal      20000000  % Total Number of Particles in R200
+Mtotal      2.01e5   % Total Mass in Code Units
+
+Mass_Ratio  1.75       % set =0 for single cluster
+
+ImpactParam 50.0
+ZeroEOrbitFrac 0.5
+
+Cuspy       1      % Use cuspy model (rc /= 9)
+
+Redshift	0.0
+
+Bfld_Norm   5e-6    % B(r) = B0 * normalised_density^eta
+Bfld_Eta    0.5     % like Bonafede 2010. B0 /=2 if Mtotal<5d4
+Bfld_Scale  30.0
+
+beta_0		0.7
+beta_1		0.7
+
+bf_0        0.17            % Baryon fraction in r200
+bf_1        0.17            % bf = 17% ~> 14% in r500, Vikhlinin+ 2006
+
+rcut_r200_ratio_0 1.7       % ICM cutoff radius, Perseus 1.7
+rcut_r200_ratio_1 1.7       % influence Temp at r > 500 kpc
+
+h_100       1.0     % HubbleConstant/100
+
+%Units
+UnitLength_in_cm 			3.085678e21        %  1.0 kpc
+UnitMass_in_g 				1.989e43           %  1.0e10 solar masses
+UnitVelocity_in_cm_per_s 	1e5                %  1 km/sec
+
+%% -DGIVEPARAMS Options
+%% here some more merger parameters can be set by hand
+
+% cluster 0
+c_nfw_0     2.9
+v_com_0     300.0
+beta_0		0.6
+rc_0        300.0
+
+% cluster 1
+c_nfw_1     3.2
+v_com_1     -2300.0
+beta_1		0.6
+rc_1        25.0
+
+%% -DADD_THIRD_SUBHALO Options
+
+SubFirstMass 1e12
+
+SubFirstPos0 10
+SubFirstPos1 120
+SubFirstPos2 980
+
+SubFirstVel0 100
+SubFirstVel1 100
+SubFirstVel2 100
+
+%% -DDOUBLE_BETA_COOL_CORES Options
+
+Rho0_Fac	50	% increase in Rho0
+Rc_Fac		40	% decrease in Rcore
+
+%% TURB_B_FIELD Options
+Kmin_Scale            0.01       % To cut off large modes: Kmin = 2 * pi / (Boxsize * Kmin_Scale)
+Turb_Spectral_Index  -3.66       % Spectral Index of turbulence spectrum
+
